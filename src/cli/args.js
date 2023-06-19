@@ -1,5 +1,9 @@
 const parseArgs = () => {
-    // Write your code here 
+    const argsArray = [];
+    for (let name in process.env) {
+      argsArray.push(`${name} is ${process.env[name]}`)
+    }
+    process.stdout.write(argsArray.join(', '))
 };
 
 parseArgs();
