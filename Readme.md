@@ -1,3 +1,6 @@
 # Node.js basics
+----
+## Two last commits was made after deadline, the one concerning cp.js was finished in minutes after deadline.
+## Please, either forgive this delay into an account or do not add points for this task.
 
-## !!! Please don't submit Pull Requests to this repository !!!
+### Thank you!
