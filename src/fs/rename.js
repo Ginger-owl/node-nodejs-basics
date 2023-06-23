@@ -1,31 +1,20 @@
 import { resolve, dirname } from 'path';
-import fs from 'fs';
+import { rename as renameAsync } from 'fs/promises';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const wrongFilePath = resolve(__dirname, './files/wrongFilename.txt')
-const rightFilePath = resolve(__dirname, './files/properFilename.md') 
+const fileInitial = resolve(__dirname, './files/wrongFilename.txt')
+const fileCopy = resolve(__dirname, './files/properFilename.md') 
 
 
 const rename = async (filePath, copyPath) => {
-  fs.access(copyPath, err => {
-    if (!err) {
-      throw new Error('FS operation failed');
-    }
-  })
-  fs.access(filePath , err => {
-    if (err) {
-      throw new Error('FS operation failed');
-    }
-  })
-
-    fs.rename(filePath, copyPath, (err) => {
-      if (err) {
-        throw new Error('FS operation failed');
-      }
-  });
+  try {
+    await renameAsync(filePath, copyPath);
+  } catch {
+    throw new Error('FS operation failed');
+  }
 };
 
-await rename(rightFilePath, wrongFilePath);
+await rename(fileInitial, fileCopy);
