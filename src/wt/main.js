@@ -1,31 +1,28 @@
 import { cpus }from 'os';
-import { Worker } from 'worker_threads';
+import { Worker, isMainThread } from 'worker_threads';
 import { fileURLToPath } from 'url';
 import { resolve, dirname } from 'path';
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const pathToWorker = resolve(__dirname, './worker.js')
 
-const performCalculations = async (pathToWorker) => {
-  
-  const systemCpuCores = cpus();
+const performCalculations = async () => {
+  const startNum = 10;
+  const numOfCpuCores = cpus().length;
 
-  for (let i= 0; i < systemCpuCores.length; i++) {
-    const worker = new Worker(pathToWorker, {
-      workerData: {
-        value: 10 + i,
-        path: pathToWorker
-      }
-    });
-     
-    worker.on('message', (result) => {
-      console.log(result);
-    });
-  }
-  
+  const promises = Array.from({ length: numOfCpuCores }, (_, i) => i).map((_, i) => {
+    if (isMainThread) {
+      return new Promise((resolve) => {
+        const worker = new Worker(pathToWorker, { workerData: startNum + i });
+        worker.on('message', (data) => resolve({ status: "resolved",data }));
+        worker.on('error', () => resolve({ status: "error",data: null }));
+      });
+    }
+  });
+
+  const results =  await Promise.all(promises)
+  console.log(results);
 };
 
 await performCalculations(pathToWorker);
